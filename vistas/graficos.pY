@@ -3,25 +3,42 @@ import plotly.express as px
 
 def renderizar_dashboard(controlador):
 
-    st.title("📊 Sistema de Análisis Estadístico de Mortalidad")
-    # --- PARTE 1: SECCIÓN DE CARGA (Tus pestañas anteriores) ---
-    st.subheader("📁 Centro de Carga y Gestión de Archivos")
-    tab_c1, tab_c2, tab_c3 = st.tabs([
-        "📊 Base Mortalidad", "🩺 Catálogo CIE-10", "🗺️ Divipola"
-    ])
-    
-    with tab_c1:
-        if st.button("🔄 Cargar Mortalidad", key="b1"): controlador.procesar_mortalidad()
-        if controlador.df_mortalidad is not None: st.caption("Mortalidad cargada.")
-    with tab_c2:
-        if st.button("🔄 Cargar Catálogo", key="b2"): controlador.procesar_causas()
-        if controlador.df_causas is not None: st.caption("Catálogo cargado.")
-    with tab_c3:
-        if st.button("🔄 Cargar Divipola", key="b3"): controlador.procesar_divipola()
-        if controlador.df_divipola is not None: st.caption("Divipola cargada.")
+    st.title("📊 Análisis de Mortalidad en Colombia 2019")
+    st.markdown("""
+        Esta plataforma permite explorar y analizar las estadísticas oficiales de defunciones no fetales 
+        en Colombia. Utilice los módulos superiores para visualizar la información y la sección de 
+        carga inferior para gestionar las bases de datos del DANE.
+    """)
+
+    with st.expander("📁 Configuración y Carga de Archivos", expanded=False):
+        tab_c1, tab_c2, tab_c3 = st.tabs([
+            "📊 Base Mortalidad", "🩺 Catálogo CIE-10", "🗺️ Divipola"
+        ])
+        
+        with tab_c1:
+            if st.button("🔄 Cargar Mortalidad"): controlador.procesar_mortalidad()
+            if controlador.df_mortalidad is not None: 
+                # Agregamos st.dataframe para visualizar la tabla
+                st.success(f"✅ Base de Mortalidad lista ({controlador.df_mortalidad.shape[0]:,} registros).")
+                st.dataframe(controlador.df_mortalidad, use_container_width=True, height=250)
+                
+        with tab_c2:
+            if st.button("🔄 Cargar Catálogo"): controlador.procesar_causas()
+            if controlador.df_causas is not None: 
+                # Agregamos st.dataframe para visualizar la tabla
+                st.success(f"✅ Catálogo CIE-10 listo ({controlador.df_causas.shape[0]:,} registros).")
+                st.dataframe(controlador.df_causas, use_container_width=True, height=250)
+                
+        with tab_c3:
+            if st.button("🔄 Cargar Divipola"): controlador.procesar_divipola()
+            if controlador.df_divipola is not None: 
+                # Agregamos st.dataframe para visualizar la tabla
+                st.success(f"✅ Divipola lista ({controlador.df_divipola.shape[0]:,} registros).")
+                st.dataframe(controlador.df_divipola, use_container_width=True, height=250)
+
+    st.divider()
 
     # --- PARTE 2: EL CUADRO DE REQUERIMIENTOS SOLICITADOS EN PESTAÑAS ---
-    st.markdown("---")
     st.header("📈 Módulos de Visualización e Interpretación")
     
     # Validamos que los datos estén listos
@@ -46,7 +63,7 @@ def renderizar_dashboard(controlador):
         st.subheader("Distribución Total de Muertes por Departamento (2019)")
         df_mapa = controlador.datos_mapa_departamental()
         
-        # Gráfico de barras horizontal como alternativa limpia si no cuentas con GeoJSON de Colombia
+        # Gráfeaico de barras horizontal como alternativa limpia si no cuentas con GeoJSON de Colombia
         fig_mapa = px.bar(df_mapa, x='Total Muertes', y='DEPARTAMENTO', 
                           title="Frecuencia de Fallecimientos por Territorio",
                           orientation='h', color='Total Muertes',
