@@ -1,3 +1,4 @@
+# Despliegue limpio v2 - Estructura completa
 import streamlit as st
 from controlador import MortalidadController
 from vistas.graficos import renderizar_dashboard
